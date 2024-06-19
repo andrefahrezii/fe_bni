@@ -15,20 +15,10 @@ const Navbar = () => {
             borderColor="#9299A4"
         >
             <Flex align="center" justify="space-between">
-                <ChakraLink color="black" fontWeight="bold" fontSize="lg" href="/" passHref>
+                <ChakraLink color="#01204E" cursor="default" fontWeight="bold" fontSize="lg" href="/" passHref>
                     BNI Transactions
                 </ChakraLink>
                 <Flex align="center">
-                    <ChakraLink href="/inquiry" passHref color="black" mx={2}>
-                        Inquiry
-                    </ChakraLink>
-                    <ChakraLink color="black" mx={2} href="/payment" passHref>
-                        Payment
-                    </ChakraLink>
-                    {/* <NextLink href="/report" passHref> */}
-                    <ChakraLink color="black" mx={2}>
-                        Report
-                    </ChakraLink>
                     {/* </NextLink> */}
                     <Menu>
                         <MenuButton as={IconButton} icon={<FiUser />} variant="link" ml={4}>
