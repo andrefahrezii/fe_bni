@@ -25,10 +25,11 @@ const IndexPage = () => {
             }
 
             const data = await response.json();
-            console.log('OTP sent successfully:', data);
+            console.log('OTP sent successfully:', data.token);
+
 
             // Set state untuk menandai bahwa OTP telah dikirim
-            return true;
+            return data;
 
         } catch (error) {
             console.error('Login failed:', error.message);
@@ -43,7 +44,6 @@ const IndexPage = () => {
             setError('OTP harus berupa angka saja');
             return;
         }
-        console.log("=========================")
         try {
             const response = await fetch('http://localhost:3001/api/auth/login', {
                 method: 'POST',
@@ -55,17 +55,20 @@ const IndexPage = () => {
                     otp: otp,
                 }),
             });
-            console.log(response, "==========")
             if (!response.ok) {
                 throw new Error('Failed to verify OTP');
             }
 
             const data = await response.json();
             console.log('OTP verified successfully:', data);
+            const token = data.token
+
+            localStorage.setItem('token:', token)
             // Panggil prop onLogin untuk mengirim token ke IndexPage
             setIsLoggedIn(true);
-            setToken(data.token);
+            setToken(data);
             setError('');
+            console.log(token, "token")
 
         } catch (error) {
             console.error('OTP verification failed:', error.message);

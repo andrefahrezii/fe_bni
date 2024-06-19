@@ -1,4 +1,4 @@
-import { Box, Heading, Text, Card, VStack, HStack, Icon } from '@chakra-ui/react';
+import { Box, Heading, Text, Card, VStack, HStack, Icon, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 import { FiCreditCard, FiFileText } from 'react-icons/fi';
 import { useState } from 'react';
 
@@ -14,6 +14,13 @@ const Home = ({ token }) => {
     const handlePayment = (data) => {
         console.log('Transaction Payment:', data);
     };
+    const data = token
+    const history = data.historyTransaksi
+    const name = data.nama
+    const saldo = data.saldoSekarang
+    const norek = data.nomor_rekening
+
+
 
     return (
         <>
@@ -23,17 +30,17 @@ const Home = ({ token }) => {
                         <VStack>
                             <HStack>
                                 <Text>
-                                    Rp 5.000.000,00 -,
+                                    Rp {saldo}-,
                                 </Text>
                             </HStack>
                             <HStack>
                                 <Text>
-                                    3304 - 91238 - 3213 - 3123
+                                    {norek}
                                 </Text>
                             </HStack>
                             <HStack>
                                 <Text>
-                                    PT ABC
+                                    {name}
                                 </Text>
                             </HStack>
                         </VStack>
@@ -51,6 +58,31 @@ const Home = ({ token }) => {
                         <Text color="white">Report</Text>
                     </Card>
                 </HStack>
+
+                {/* Tabel Transaksi */}
+                <Box mt={8}>
+                    <Heading size="md" mb={4}>Transaction History</Heading>
+                    <Table variant="striped" colorScheme="gray">
+                        <Thead>
+                            <Tr>
+                                <Th>Type</Th>
+                                <Th>Amount</Th>
+                                <Th>Transaction Fee</Th>
+                                <Th>Date</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {history.map((transaction) => (
+                                <Tr key={transaction.id}>
+                                    <Td>{transaction.type}</Td>
+                                    <Td>{transaction.amount}</Td>
+                                    <Td>{transaction.transactionFee}</Td>
+                                    <Td>{transaction.date}</Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
             </Box>
         </>
     );
