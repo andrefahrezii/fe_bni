@@ -1,37 +1,89 @@
-import { Box, Heading } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import TransactionForm from '../components/TransactionForm';
 import Login from '../components/Login';
+import Home from './home'; // Pastikan import Home dari file yang sesuai
 
 const IndexPage = () => {
-    const handleInquiry = (data) => {
-        // Lakukan logika untuk transaksi inquiry
-        console.log('Transaction Inquiry:', data);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [token, setToken] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSendOtp = async (phoneNumber) => {
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nomor_telepon: phoneNumber,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send OTP');
+            }
+
+            const data = await response.json();
+            console.log('OTP sent successfully:', data);
+
+            // Set state untuk menandai bahwa OTP telah dikirim
+            return true;
+
+        } catch (error) {
+            console.error('Login failed:', error.message);
+            setError('Failed to send OTP');
+            return false;
+        }
     };
 
-    const handlePayment = (data) => {
-        // Lakukan logika untuk transaksi payment
-        console.log('Transaction Payment:', data);
+    const handleVerifyOtp = async (phoneNumber, otp) => {
+        const otpRegex = /^\d+$/;
+        if (!otpRegex.test(otp)) {
+            setError('OTP harus berupa angka saja');
+            return;
+        }
+        console.log("=========================")
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nomor_telepon: phoneNumber,
+                    otp: otp,
+                }),
+            });
+            console.log(response, "==========")
+            if (!response.ok) {
+                throw new Error('Failed to verify OTP');
+            }
+
+            const data = await response.json();
+            console.log('OTP verified successfully:', data);
+            // Panggil prop onLogin untuk mengirim token ke IndexPage
+            setIsLoggedIn(true);
+            setToken(data.token);
+            setError('');
+
+        } catch (error) {
+            console.error('OTP verification failed:', error.message);
+            setError('Failed to verify OTP');
+        }
     };
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const handleLogin = () => {
-        // Lakukan validasi login di sini
-        // Jika login berhasil, set isLoggedIn menjadi true
-        // Jika login gagal, tampilkan pesan kesalahan
-        setIsLoggedIn(true); // Sementara, untuk demonstrasi langsung set isLoggedIn menjadi true
-    };
+
     return (
         <>
             <Box p={8}>
                 {!isLoggedIn ? (
-                    <Login onLogin={handleLogin} />
+                    <Login
+                        onSendOtp={handleSendOtp}
+                        onVerifyOtp={handleVerifyOtp}
+                        error={error}
+                    />
                 ) : (
-                    // Tampilkan halaman home di sini setelah login berhasil
-                    <Box>
-                        <Heading mb={4}>BNI Transactions</Heading>
-                        <TransactionForm onInquiry={handleInquiry} onPayment={handlePayment} />
-                    </Box>
+                    <Home token={token} />
                 )}
             </Box>
         </>
